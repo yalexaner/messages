@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,15 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
-import yalexaner.messages.R
-import yalexaner.messages.Route
-import yalexaner.messages.data.Conversation
-import yalexaner.messages.data.MainViewModel
-import yalexaner.messages.data.MainViewModelFactory
+import yalexaner.messages.data.ConversationsViewModel
+import yalexaner.messages.data.ConversationsViewModelFactory
+import yalexaner.messages.data.enteties.Conversation
 import yalexaner.messages.other.AmbientAppCompatActivity
 import yalexaner.messages.other.AmbientPermissionHandler
 import yalexaner.messages.other.PERMISSION_REQUEST_CODE
+import yalexaner.messages.other.toFormattedString
 import yalexaner.messages.permission.PermissionHandler
 import yalexaner.messages.permission.PermissionsRequest
 import yalexaner.messages.ui.theme.indianRed
@@ -50,8 +47,7 @@ fun ConversationsScreen(navController: NavController) {
             permissions = arrayOf(Manifest.permission.READ_SMS),
             requestCode = PERMISSION_REQUEST_CODE,
             onGranted = { Conversations() },
-            onDenied = { navController.navigate(Route.MAIN_SCREEN) },
-            rational = { navController.navigate(Route.MAIN_SCREEN) }
+            onDenied = {}
         )
     }
 }
@@ -60,24 +56,14 @@ fun ConversationsScreen(navController: NavController) {
 private fun Conversations() {
     val conversations by run {
         val context = AmbientContext.current
-        val viewModel: MainViewModel = viewModel(factory = MainViewModelFactory(context))
+        val viewModel: ConversationsViewModel =
+            viewModel(factory = ConversationsViewModelFactory(context))
 
         viewModel.conversations.observeAsState()
     }
-    val loadingMessage = stringResource(R.string.loading)
-    val noConversationMessage = stringResource(R.string.no_conversations)
 
-    if (conversations.isNullOrEmpty()) {
-        Message(text = if (conversations == null) loadingMessage else noConversationMessage)
-    } else {
+    if (!conversations.isNullOrEmpty()) {
         List(conversations = conversations!!)
-    }
-}
-
-@Composable
-private fun Message(text: String) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(text = text, modifier = Modifier.align(Alignment.Center))
     }
 }
 
@@ -89,7 +75,7 @@ private fun List(conversations: List<Conversation>) {
                 image = Icons.TwoTone.AccountCircle,
                 text = conversation.address,
                 secondText = conversation.body,
-                cornerText = conversation.date.toString()
+                cornerText = conversation.date.toFormattedString("dd.MM.yyyy")
             )
         }
     }
@@ -103,64 +89,58 @@ private fun ListItem(
     cornerText: String
 ) {
     Row(
-        modifier = Modifier
-            .clickable { }
-            .padding(8.dp),
+        modifier = Modifier.clickable { }.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ListItem.Image(image = image)
+        Image(image = image)
         Column {
-            ListItem.FirstRowText(text = text, cornerText = cornerText)
+            FirstRowText(text = text, cornerText = cornerText)
             Spacer(modifier = Modifier.height(4.dp))
-            ListItem.SecondRowText(text = secondText)
+            SecondRowText(text = secondText)
         }
     }
 }
 
-private object ListItem {
-    @Composable
-    fun Image(image: ImageVector) {
-        Image(
-            imageVector = image,
-            colorFilter = ColorFilter.tint(color = indianRed),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(72.dp)
-        )
-    }
+@Composable
+fun Image(image: ImageVector) {
+    Image(
+        imageVector = image,
+        colorFilter = ColorFilter.tint(color = indianRed),
+        contentDescription = null,
+        modifier = Modifier.size(64.dp).padding(end = 8.dp)
+    )
+}
 
-    @Composable
-    fun FirstRowText(text: String, cornerText: String) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = text,
-                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium)
-            )
-            Text(
-                text = cornerText,
-                style = TextStyle(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.Gray
-                ),
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-
-    @Composable
-    fun SecondRowText(text: String) {
+@Composable
+fun FirstRowText(text: String, cornerText: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = text,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        )
+        Text(
+            text = cornerText,
             style = TextStyle(
-                fontSize = 16.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray
-            )
+            ),
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+fun SecondRowText(text: String) {
+    Text(
+        text = text,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        style = TextStyle(
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color.Gray
+        )
+    )
 }

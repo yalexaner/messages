@@ -1,8 +1,6 @@
 package yalexaner.messages.data
 
 import android.content.Context
-import android.database.Cursor
-import android.net.Uri
 import android.provider.Telephony.Sms
 import android.provider.Telephony.TextBasedSmsColumns.*
 import android.provider.Telephony.Threads
@@ -13,11 +11,14 @@ import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import yalexaner.messages.data.enteties.Conversation
 import yalexaner.messages.other.getAsInt
 import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString
+import yalexaner.messages.other.getCursor
+import java.util.*
 
-class MainViewModel(context: Context) : ViewModel() {
+class ConversationsViewModel(context: Context) : ViewModel() {
     val conversations: LiveData<List<Conversation>> = liveData {
         emit(getConversations(context))
     }
@@ -35,9 +36,9 @@ private suspend fun getConversations(context: Context) = withContext(Dispatchers
         val threadId = cursor.getAsInt(THREAD_ID)
         val address = cursor.getAsString(ADDRESS)
         val body = cursor.getAsString(BODY)
-        val date = cursor.getAsLong(DATE)
+        val milliseconds = cursor.getAsLong(DATE)
 
-        conversations.add(Conversation(threadId, address, body, date))
+        conversations.add(Conversation(threadId, address, body, Date(milliseconds)))
     }
 
     cursor?.close()
@@ -45,25 +46,11 @@ private suspend fun getConversations(context: Context) = withContext(Dispatchers
     conversations
 }
 
-private fun Context.getCursor(
-    contentUri: Uri,
-    projection: Array<String>? = null,
-    selection: String? = null,
-    selectionArguments: Array<String>? = null,
-    sortOrder: String? = null
-): Cursor? = contentResolver.query(
-    contentUri,
-    projection,
-    selection,
-    selectionArguments,
-    sortOrder
-)
-
 @Suppress("UNCHECKED_CAST")
-class MainViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class ConversationsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(context) as T
+        if (modelClass.isAssignableFrom(ConversationsViewModel::class.java)) {
+            return ConversationsViewModel(context) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }
