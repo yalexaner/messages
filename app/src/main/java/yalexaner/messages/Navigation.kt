@@ -11,7 +11,7 @@ fun Navigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Route.MESSAGES_SCREEN) {
-        composable(Route.MESSAGES_SCREEN) { ConversationsScreen(navController) }
+        composable(Route.MESSAGES_SCREEN) { ConversationsScreen() }
     }
 }
 

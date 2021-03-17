@@ -10,7 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -18,20 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.viewModel
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import yalexaner.messages.MainActivity.Companion.LocalAppCompatActivity
+import yalexaner.messages.MainActivity.Companion.LocalPermissionHandler
 import yalexaner.messages.data.ConversationsViewModel
 import yalexaner.messages.data.ConversationsViewModelFactory
 import yalexaner.messages.data.enteties.Conversation
-import yalexaner.messages.other.AmbientAppCompatActivity
-import yalexaner.messages.other.AmbientPermissionHandler
 import yalexaner.messages.other.PERMISSION_REQUEST_CODE
 import yalexaner.messages.other.toFormattedString
 import yalexaner.messages.permission.PermissionHandler
@@ -39,10 +38,10 @@ import yalexaner.messages.permission.PermissionsRequest
 import yalexaner.messages.ui.theme.indianRed
 
 @Composable
-fun ConversationsScreen(navController: NavController) {
-    val permissionHandler = PermissionHandler(AmbientAppCompatActivity.current)
+fun ConversationsScreen() {
+    val permissionHandler = PermissionHandler(LocalAppCompatActivity.current)
 
-    Providers(AmbientPermissionHandler provides permissionHandler) {
+    CompositionLocalProvider(LocalPermissionHandler provides permissionHandler) {
         PermissionsRequest(
             permissions = arrayOf(Manifest.permission.READ_SMS),
             requestCode = PERMISSION_REQUEST_CODE,
@@ -55,7 +54,7 @@ fun ConversationsScreen(navController: NavController) {
 @Composable
 private fun Conversations() {
     val conversations by run {
-        val context = AmbientContext.current
+        val context = LocalContext.current
         val viewModel: ConversationsViewModel =
             viewModel(factory = ConversationsViewModelFactory(context))
 
@@ -89,7 +88,9 @@ private fun ListItem(
     cornerText: String
 ) {
     Row(
-        modifier = Modifier.clickable { }.padding(8.dp),
+        modifier = Modifier
+            .clickable { }
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(image = image)
@@ -107,7 +108,9 @@ fun Image(image: ImageVector) {
         imageVector = image,
         colorFilter = ColorFilter.tint(color = indianRed),
         contentDescription = null,
-        modifier = Modifier.size(64.dp).padding(end = 8.dp)
+        modifier = Modifier
+            .size(64.dp)
+            .padding(end = 8.dp)
     )
 }
 

@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.eazypermissions.common.model.PermissionResult
-import yalexaner.messages.other.AmbientPermissionHandler
+import yalexaner.messages.MainActivity.Companion.LocalPermissionHandler
 
 @Composable
 fun PermissionsRequest(
@@ -17,7 +17,7 @@ fun PermissionsRequest(
     rational: (@Composable () -> Unit)? = null,
     awaitResult: (@Composable () -> Unit)? = null,
 ) {
-    val permissionHandler = AmbientPermissionHandler.current
+    val permissionHandler = LocalPermissionHandler.current
     val (permissionResult, setPermissionResult) = remember(permissions) {
         mutableStateOf<PermissionResult?>(null)
     }
