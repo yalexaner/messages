@@ -1,12 +1,10 @@
 package yalexaner.messages.ui.screens
 
 import android.Manifest
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.runtime.Composable
@@ -30,7 +28,7 @@ import yalexaner.messages.other.PERMISSION_REQUEST_CODE
 import yalexaner.messages.other.toFormattedString
 import yalexaner.messages.permission.PermissionHandler
 import yalexaner.messages.permission.PermissionsRequest
-import yalexaner.messages.ui.theme.indianRed
+import yalexaner.messages.ui.components.SecondRowText
 
 @Composable
 fun ConversationsScreen() {
@@ -103,50 +101,4 @@ private fun ListItem(
             SecondRowText(text = conversation.body)
         }
     }
-}
-
-@Composable
-fun Image(image: ImageVector) {
-    Image(
-        imageVector = image,
-        colorFilter = ColorFilter.tint(color = indianRed),
-        contentDescription = null,
-        modifier = Modifier
-            .size(64.dp)
-            .padding(end = 8.dp)
-    )
-}
-
-@Composable
-fun FirstRowText(text: String, cornerText: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = text,
-            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-        )
-        Text(
-            text = cornerText,
-            style = TextStyle(
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray
-            ),
-            textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun SecondRowText(text: String) {
-    Text(
-        text = text,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = TextStyle(
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            color = Color.Gray
-        )
-    )
 }

@@ -1,4 +1,4 @@
-package yalexaner.messages.data.enteties
+package yalexaner.messages.data.conversations
 
 import java.util.*
 
