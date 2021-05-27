@@ -15,22 +15,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import yalexaner.messages.MainActivity.Companion.LocalAppCompatActivity
 import yalexaner.messages.MainActivity.Companion.LocalPermissionHandler
-import yalexaner.messages.data.ConversationsViewModel
-import yalexaner.messages.data.ConversationsViewModelFactory
-import yalexaner.messages.data.enteties.Conversation
+import yalexaner.messages.data.conversations.Conversation
+import yalexaner.messages.data.conversations.ConversationsEvent
+import yalexaner.messages.data.conversations.ConversationsState
+import yalexaner.messages.models.ConversationsViewModel
+import yalexaner.messages.models.ConversationsViewModelFactory
 import yalexaner.messages.other.PERMISSION_REQUEST_CODE
 import yalexaner.messages.other.toFormattedString
 import yalexaner.messages.permission.PermissionHandler
@@ -53,28 +48,35 @@ fun ConversationsScreen() {
 
 @Composable
 private fun Conversations() {
-    val conversations by run {
-        val context = LocalContext.current
-        val viewModel: ConversationsViewModel =
-            viewModel(factory = ConversationsViewModelFactory(context))
+    val context = LocalContext.current
+    val model: ConversationsViewModel = viewModel(factory = ConversationsViewModelFactory(context))
 
-        viewModel.conversations.observeAsState()
-    }
+    val state by model.state.observeAsState()
 
-    if (!conversations.isNullOrEmpty()) {
-        List(conversations = conversations!!)
+    when (state) {
+        is ConversationsState.Loading -> TODO()
+        is ConversationsState.LoadedNothing -> TODO()
+        is ConversationsState.Loaded -> {
+            val conversations = (state as ConversationsState.Loaded).conversations
+            List(
+                conversations = conversations,
+                onItemClick = { model.obtain(intent = ConversationsEvent.OpenMessagesScreen(it)) }
+            )
+        }
     }
 }
 
 @Composable
-private fun List(conversations: List<Conversation>) {
+private fun List(
+    conversations: List<Conversation>,
+    onItemClick: (Int) -> Unit = {}
+) {
     LazyColumn {
         items(conversations) { conversation ->
             ListItem(
                 image = Icons.TwoTone.AccountCircle,
-                text = conversation.address,
-                secondText = conversation.body,
-                cornerText = conversation.date.toFormattedString("dd.MM.yyyy")
+                conversation = conversation,
+                onItemClick = onItemClick
             )
         }
     }
@@ -83,21 +85,22 @@ private fun List(conversations: List<Conversation>) {
 @Composable
 private fun ListItem(
     image: ImageVector,
-    text: String,
-    secondText: String,
-    cornerText: String
+    conversation: Conversation,
+    onItemClick: (Int) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
-            .clickable { }
+            .clickable { onItemClick(conversation.threadId) }
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val cornerText = conversation.date.toFormattedString("dd.MM.yyyy")
+
         Image(image = image)
         Column {
-            FirstRowText(text = text, cornerText = cornerText)
+            FirstRowText(text = conversation.address, cornerText = cornerText)
             Spacer(modifier = Modifier.height(4.dp))
-            SecondRowText(text = secondText)
+            SecondRowText(text = conversation.body)
         }
     }
 }
