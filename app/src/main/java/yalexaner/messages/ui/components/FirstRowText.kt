@@ -1,4 +1,4 @@
-package yalexaner.messages.ui.screens
+package yalexaner.messages.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
