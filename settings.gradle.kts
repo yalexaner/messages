@@ -1,2 +1,2 @@
 rootProject.name = "Messages"
-include ':app'
+include(":app")
