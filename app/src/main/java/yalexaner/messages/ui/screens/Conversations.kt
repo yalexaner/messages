@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import yalexaner.messages.MainActivity.Companion.LocalAppCompatActivity
 import yalexaner.messages.MainActivity.Companion.LocalPermissionHandler
 import yalexaner.messages.data.conversations.Conversation
@@ -31,21 +32,21 @@ import yalexaner.messages.ui.components.Image
 import yalexaner.messages.ui.components.SecondRowText
 
 @Composable
-fun ConversationsScreen(model: ConversationsViewModel) {
+fun ConversationsScreen() {
     val permissionHandler = PermissionHandler(LocalAppCompatActivity.current)
 
     CompositionLocalProvider(LocalPermissionHandler provides permissionHandler) {
         PermissionsRequest(
             permissions = arrayOf(Manifest.permission.READ_SMS),
             requestCode = PERMISSION_REQUEST_CODE,
-            onGranted = { Conversations(model = model) },
+            onGranted = { Conversations() },
             onDenied = {}
         )
     }
 }
 
 @Composable
-private fun Conversations(model: ConversationsViewModel) {
+private fun Conversations(model: ConversationsViewModel = hiltViewModel()) {
     val state by model.state.observeAsState()
 
     when (state) {
