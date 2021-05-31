@@ -20,7 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import yalexaner.messages.MainActivity.Companion.LocalAppCompatActivity
 import yalexaner.messages.MainActivity.Companion.LocalPermissionHandler
 import yalexaner.messages.data.conversations.Conversation
-import yalexaner.messages.data.conversations.ConversationsEvent
 import yalexaner.messages.data.conversations.ConversationsState
 import yalexaner.messages.models.ConversationsViewModel
 import yalexaner.messages.other.PERMISSION_REQUEST_CODE
@@ -32,21 +31,24 @@ import yalexaner.messages.ui.components.Image
 import yalexaner.messages.ui.components.SecondRowText
 
 @Composable
-fun ConversationsScreen() {
+fun ConversationsScreen(onItemClick: (String) -> Unit) {
     val permissionHandler = PermissionHandler(LocalAppCompatActivity.current)
 
     CompositionLocalProvider(LocalPermissionHandler provides permissionHandler) {
         PermissionsRequest(
             permissions = arrayOf(Manifest.permission.READ_SMS),
             requestCode = PERMISSION_REQUEST_CODE,
-            onGranted = { Conversations() },
+            onGranted = { Conversations(onItemClick = onItemClick) },
             onDenied = {}
         )
     }
 }
 
 @Composable
-private fun Conversations(model: ConversationsViewModel = hiltViewModel()) {
+private fun Conversations(
+    model: ConversationsViewModel = hiltViewModel(),
+    onItemClick: (String) -> Unit
+) {
     val state by model.state.observeAsState()
 
     when (state) {
@@ -56,7 +58,7 @@ private fun Conversations(model: ConversationsViewModel = hiltViewModel()) {
             val conversations = (state as ConversationsState.Loaded).conversations
             List(
                 conversations = conversations,
-                onItemClick = { model.obtain(intent = ConversationsEvent.OpenMessagesScreen(it)) }
+                onItemClick = onItemClick
             )
         }
     }
@@ -65,7 +67,7 @@ private fun Conversations(model: ConversationsViewModel = hiltViewModel()) {
 @Composable
 private fun List(
     conversations: List<Conversation>,
-    onItemClick: (Int) -> Unit = {}
+    onItemClick: (String) -> Unit = {}
 ) {
     LazyColumn {
         items(conversations) { conversation ->
@@ -82,7 +84,7 @@ private fun List(
 private fun ListItem(
     image: ImageVector,
     conversation: Conversation,
-    onItemClick: (Int) -> Unit = {}
+    onItemClick: (String) -> Unit = {}
 ) {
     Row(
         modifier = Modifier

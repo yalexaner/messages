@@ -2,7 +2,6 @@ package yalexaner.messages.models
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.Telephony
 import android.provider.Telephony.Sms
 import android.provider.Telephony.TextBasedSmsColumns.*
 import android.provider.Telephony.Threads
@@ -15,9 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import yalexaner.messages.data.conversations.Conversation
-import yalexaner.messages.data.conversations.ConversationsEvent
 import yalexaner.messages.data.conversations.ConversationsState
-import yalexaner.messages.other.getAsInt
 import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString
 import yalexaner.messages.other.getCursor
@@ -41,22 +38,17 @@ class ConversationsViewModel @Inject constructor(
         }
     }
 
-    fun obtain(intent: ConversationsEvent) {
-        when (intent) {
-            is ConversationsEvent.OpenMessagesScreen -> TODO()
-        }
-    }
-
-    private suspend fun getConversations() = withContext(Dispatchers.IO) {
+    private suspend fun getConversations(): List<Conversation> = withContext(Dispatchers.IO) {
         val cursor = context.getCursor(
             contentUri = Threads.CONTENT_URI,
             projection = arrayOf(THREAD_ID, ADDRESS, BODY, DATE),
             sortOrder = Sms.DEFAULT_SORT_ORDER
-        )
+        ) ?: return@withContext emptyList()
+
         val conversations: MutableList<Conversation> = mutableListOf()
 
-        while (cursor?.moveToNext() == true && isActive) {
-            val threadId = cursor.getAsInt(THREAD_ID)
+        while (cursor.moveToNext() && isActive) {
+            val threadId = cursor.getAsString(THREAD_ID)
             val address = cursor.getAsString(ADDRESS)
             val body = cursor.getAsString(BODY)
             val milliseconds = cursor.getAsLong(DATE)
@@ -64,7 +56,7 @@ class ConversationsViewModel @Inject constructor(
             conversations.add(Conversation(threadId, address, body, Date(milliseconds)))
         }
 
-        cursor?.close()
+        cursor.close()
 
         conversations
     }
