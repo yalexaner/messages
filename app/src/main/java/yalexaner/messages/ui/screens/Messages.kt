@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import yalexaner.messages.data.messages.Message
@@ -42,17 +43,30 @@ fun Messages(
 @Composable
 fun MessagesList(messages: List<Message>) {
     LazyColumn {
-        itemsIndexed(messages) { index, message ->
-            if (index == 0) {
+        val messagesByDate = messages.groupBy { Date(it.date).toFormattedString("d MMM YYY") }
+
+        @Suppress("NAME_SHADOWING")
+        for ((date, messages) in messagesByDate) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = date,
+                    textAlign = TextAlign.Center
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Message(message = message)
+            itemsIndexed(messages) { index, message ->
+                Message(message = message)
 
-            if (message.type == messages.getOrNull(index + 1)?.type) {
-                Spacer(modifier = Modifier.height(2.dp))
-            } else {
-                Spacer(modifier = Modifier.height(16.dp))
+                if (message.type == messages.getOrNull(index + 1)?.type) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                } else {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
