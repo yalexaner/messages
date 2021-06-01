@@ -8,6 +8,7 @@ import java.util.*
 
 fun Cursor.getAsLong(name: String): Long = getLong(getColumnIndex(name))
 fun Cursor.getAsString(name: String): String = getString(getColumnIndex(name))
+fun Cursor.getAsInt(name: String): Int = getInt(getColumnIndex(name))
 
 fun Date.toFormattedString(pattern: String): String =
     SimpleDateFormat(pattern, Locale.getDefault()).format(this)

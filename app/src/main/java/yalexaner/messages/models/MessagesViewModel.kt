@@ -13,8 +13,11 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import yalexaner.messages.data.messages.Message
+import yalexaner.messages.data.messages.MessageType
 import yalexaner.messages.data.messages.MessagesEvent
 import yalexaner.messages.data.messages.MessagesState
+import yalexaner.messages.other.getAsInt
+import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString
 import yalexaner.messages.other.getCursor
 import java.util.*
@@ -49,18 +52,26 @@ class MessagesViewModel @Inject constructor(
     private suspend fun getMessages(threadId: String) = withContext(Dispatchers.IO) {
         val cursor = context.getCursor(
             contentUri = CONTENT_URI,
-            projection = arrayOf(THREAD_ID, BODY, DATE),
+            projection = arrayOf(THREAD_ID, BODY, DATE, TYPE),
             selection = "$THREAD_ID = ?",
             selectionArguments = arrayOf(threadId),
-            sortOrder = DEFAULT_SORT_ORDER
+            sortOrder = "date ASC"
         ) ?: return@withContext emptyList()
 
         val conversations: MutableList<Message> = mutableListOf()
 
         while (cursor.moveToNext() && isActive) {
             val body = cursor.getAsString(BODY)
+            val date = cursor.getAsLong(DATE)
+            val type = cursor.getAsInt(TYPE)
 
-            conversations.add(Message(body))
+            conversations.add(
+                Message(
+                    body,
+                    date,
+                    if (type == MESSAGE_TYPE_INBOX) MessageType.INBOX else MessageType.OUTBOX
+                )
+            )
         }
 
         cursor.close()
