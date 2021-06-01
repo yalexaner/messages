@@ -1,9 +1,12 @@
 package yalexaner.messages
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import yalexaner.messages.data.messages.MessagesEvent
+import yalexaner.messages.models.MessagesViewModel
 import yalexaner.messages.ui.screens.ConversationsScreen
 import yalexaner.messages.ui.screens.MessagesScreen
 
@@ -18,7 +21,10 @@ fun Navigation() {
 
         composable(Route.Messages.generic) { backStackEntry ->
             val threadId = backStackEntry.arguments?.getString(Route.Messages.THREAD_ID)!!
-            MessagesScreen(threadId = threadId)
+            val model: MessagesViewModel = hiltViewModel()
+            model.obtain(intent = MessagesEvent.LoadMessages(threadId))
+
+            MessagesScreen(model = model)
         }
     }
 }

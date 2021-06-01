@@ -19,11 +19,8 @@ fun MessagesScreen(threadId: String) {
 
 @Composable
 fun Messages(
-    model: MessagesViewModel = hiltViewModel(),
-    threadId: String
+    model: MessagesViewModel = hiltViewModel()
 ) {
-    model.obtain(intent = MessagesEvent.LoadMessages(threadId))
-
     val state by model.state.observeAsState()
 
     when (state) {
