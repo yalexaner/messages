@@ -12,14 +12,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import yalexaner.messages.data.messages.Message
 import yalexaner.messages.data.messages.MessageType
 import yalexaner.messages.data.messages.MessagesState
 import yalexaner.messages.models.MessagesViewModel
+import yalexaner.messages.other.toFormattedString
+import java.util.*
 
 @Composable
 fun MessagesScreen(model: MessagesViewModel) {
@@ -65,42 +65,46 @@ private fun Message(
 ) {
     if (message.body.isBlank()) return
 
-    val startPadding: Dp
-    val endPadding: Dp
-    val alignment: Alignment.Horizontal
-    val color: Color
-    val textColor: Color
+    val isInbox = message.type == MessageType.INBOX
 
-    when (message.type) {
-        MessageType.INBOX -> {
-            startPadding = 24.dp
-            endPadding = 64.dp
-            alignment = Alignment.Start
-            color = MaterialTheme.colors.secondary
-            textColor = MaterialTheme.colors.onSecondary
-        }
+    val paddingStart = if (isInbox) 24.dp else 64.dp
+    val paddingEnd = if (isInbox) 64.dp else 24.dp
+    val alignment = if (isInbox) Arrangement.Start else Arrangement.End
 
-        MessageType.OUTBOX -> {
-            startPadding = 64.dp
-            endPadding = 24.dp
-            alignment = Alignment.End
-            color = MaterialTheme.colors.primary
-            textColor = MaterialTheme.colors.onPrimary
-        }
-    }
-
-    Column(
+    Row(
         modifier = modifier
-            .padding(start = startPadding, end = endPadding)
+            .padding(start = paddingStart, end = paddingEnd)
             .fillMaxWidth(),
-        horizontalAlignment = alignment
+        horizontalArrangement = alignment
     ) {
-        Text(
-            modifier = Modifier
-                .background(color = color, shape = RoundedCornerShape(10.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            text = message.body,
-            color = textColor
+        val colors = MaterialTheme.colors
+        val color = if (isInbox) colors.secondary else colors.primary
+        val messageShape = RoundedCornerShape(
+            topStart = 15.dp,
+            topEnd = 15.dp,
+            bottomStart = if (isInbox) 0.dp else 15.dp,
+            bottomEnd = if (isInbox) 15.dp else 0.dp,
         )
+
+        Column(
+            modifier = modifier
+                .background(color = color, shape = messageShape)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = message.body,
+                style = MaterialTheme.typography.subtitle1,
+                color = if (isInbox) colors.onSecondary else colors.onPrimary
+            )
+
+            Spacer(modifier = Modifier.height(1.dp))
+
+            Text(
+                text = Date(message.date).toFormattedString("h:mm a"),
+                style = MaterialTheme.typography.overline,
+                color = if (isInbox) colors.onSecondary else colors.onPrimary
+            )
+        }
     }
 }
