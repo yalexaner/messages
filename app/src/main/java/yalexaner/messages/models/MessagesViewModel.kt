@@ -3,7 +3,6 @@ package yalexaner.messages.models
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Telephony.Sms.CONTENT_URI
-import android.provider.Telephony.Sms.DEFAULT_SORT_ORDER
 import android.provider.Telephony.TextBasedSmsColumns.*
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import yalexaner.messages.data.OptionsHandler
 import yalexaner.messages.data.messages.Message
 import yalexaner.messages.data.messages.MessageType
 import yalexaner.messages.data.messages.MessagesEvent
@@ -29,18 +29,25 @@ class MessagesViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
+    private var messages: List<Message> = emptyList()
+
     private val _state = MutableLiveData<MessagesState>(MessagesState.Loading)
-    val state: LiveData<MessagesState>
-        get() = _state
+    val state: LiveData<MessagesState> = _state
 
     fun obtain(intent: MessagesEvent) {
         when (intent) {
             is MessagesEvent.LoadMessages -> viewModelScope.launch { loadMessages(intent.threadId) }
+            is MessagesEvent.ShowOptionsMenu -> _state.value = MessagesState.ShowOptionsMenu(
+                messages,
+                intent.message,
+                OptionsHandler.get
+            )
+            is MessagesEvent.CloseOptionsMenu -> _state.value = MessagesState.Loaded(messages)
         }
     }
 
     private suspend fun loadMessages(threadId: String) {
-        val messages = getMessages(threadId)
+        messages = getMessages(threadId)
 
         _state.value = if (messages.isEmpty()) {
             MessagesState.LoadedNothing

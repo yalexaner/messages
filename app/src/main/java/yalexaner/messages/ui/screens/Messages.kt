@@ -1,24 +1,30 @@
 package yalexaner.messages.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import yalexaner.messages.data.Option
 import yalexaner.messages.data.messages.Message
 import yalexaner.messages.data.messages.MessageType
+import yalexaner.messages.data.messages.MessagesEvent
 import yalexaner.messages.data.messages.MessagesState
 import yalexaner.messages.models.MessagesViewModel
+import yalexaner.messages.other.noRippleClickable
+import yalexaner.messages.other.noRippleCombinedClickable
 import yalexaner.messages.other.toFormattedString
 import java.util.*
 
@@ -36,13 +42,88 @@ fun Messages(
     when (state) {
         is MessagesState.Loading -> Text(text = "Loading")
         is MessagesState.LoadedNothing -> Text(text = "Nothing to show")
-        is MessagesState.Loaded -> MessagesList(messages = (state as MessagesState.Loaded).messages)
+        is MessagesState.Loaded -> {
+            MessagesList(
+                messages = (state as MessagesState.Loaded).messages,
+                onItemClick = { model.obtain(intent = MessagesEvent.ShowOptionsMenu(it)) }
+            )
+        }
+        is MessagesState.ShowOptionsMenu -> {
+            val messages = (state as MessagesState.ShowOptionsMenu).messages
+            val message = (state as MessagesState.ShowOptionsMenu).message
+            val options = (state as MessagesState.ShowOptionsMenu).options
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                MessagesList(modifier = Modifier.fillMaxSize(), messages = messages)
+
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xCC000000))
+                        .noRippleClickable { model.obtain(intent = MessagesEvent.CloseOptionsMenu) },
+                )
+
+                OptionsMenu(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    message = message,
+                    options = options
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun MessagesList(messages: List<Message>) {
-    LazyColumn {
+fun OptionsMenu(
+    modifier: Modifier = Modifier,
+    message: Message,
+    options: List<Option>
+) {
+    Column(modifier = modifier) {
+        MessageItem(message = message)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            elevation = 5.dp,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = 16.dp)
+            ) {
+                options.forEach { option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { }
+                            .padding(horizontal = 32.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = option.icon, contentDescription = "Option icon"
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = option.text, fontSize = 20.sp)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MessagesList(
+    modifier: Modifier = Modifier,
+    messages: List<Message>,
+    onItemClick: ((Message) -> Unit)? = null,
+    onItemLongClick: (() -> Unit)? = null,
+    onItemDoubleClick: (() -> Unit)? = null
+) {
+    LazyColumn(modifier = modifier) {
         val messagesByDate = messages.groupBy { Date(it.date).toFormattedString("d MMM YYY") }
 
         @Suppress("NAME_SHADOWING")
@@ -60,7 +141,12 @@ fun MessagesList(messages: List<Message>) {
             }
 
             itemsIndexed(messages) { index, message ->
-                Message(message = message)
+                MessageItem(
+                    message = message,
+                    onItemClick = onItemClick,
+                    onItemLongClick = onItemLongClick,
+                    onItemDoubleClick = onItemDoubleClick
+                )
 
                 if (message.type == messages.getOrNull(index + 1)?.type) {
                     Spacer(modifier = Modifier.height(2.dp))
@@ -73,9 +159,12 @@ fun MessagesList(messages: List<Message>) {
 }
 
 @Composable
-private fun Message(
+private fun MessageItem(
     modifier: Modifier = Modifier,
-    message: Message
+    message: Message,
+    onItemClick: ((Message) -> Unit)? = null,
+    onItemLongClick: (() -> Unit)? = null,
+    onItemDoubleClick: (() -> Unit)? = null
 ) {
     if (message.body.isBlank()) return
 
@@ -100,8 +189,18 @@ private fun Message(
             bottomEnd = if (isInbox) 15.dp else 0.dp,
         )
 
+        val clickable = if (onItemClick != null) {
+            modifier.noRippleCombinedClickable(
+                onClick = { onItemClick(message) },
+                onLongClick = onItemLongClick,
+                onDoubleClick = onItemDoubleClick
+            )
+        } else {
+            modifier
+        }
+
         Column(
-            modifier = modifier
+            modifier = clickable
                 .background(color = color, shape = messageShape)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.End

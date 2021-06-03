@@ -58,6 +58,7 @@ dependencies {
     implementation(Libraries.Compose.ui)
     implementation(Libraries.Compose.uiTooling)
     implementation(Libraries.Compose.material)
+    implementation(Libraries.Compose.icons)
     implementation(Libraries.Compose.runtime)
     implementation(Libraries.Compose.livedata)
     implementation(Libraries.Compose.navigation)
