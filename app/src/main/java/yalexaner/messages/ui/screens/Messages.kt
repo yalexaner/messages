@@ -4,9 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,18 +48,30 @@ fun Messages(
         is MessagesState.Loading -> Text(text = "Loading")
         is MessagesState.LoadedNothing -> Text(text = "Nothing to show")
         is MessagesState.Loaded -> {
-            MessagesList(
-                messages = (state as MessagesState.Loaded).messages,
-                onItemClick = { model.obtain(intent = MessagesEvent.ShowOptionsMenu(it)) }
-            )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                MessagesList(
+                    messages = (state as MessagesState.Loaded).messages,
+                    listState = (state as MessagesState.Loaded).savedListState,
+                    onItemClick = { message, saveListState ->
+                        model.obtain(intent = MessagesEvent.ShowOptionsMenu(message, saveListState))
+                    }
+                )
+            }
         }
         is MessagesState.ShowOptionsMenu -> {
             val messages = (state as MessagesState.ShowOptionsMenu).messages
             val message = (state as MessagesState.ShowOptionsMenu).message
             val options = (state as MessagesState.ShowOptionsMenu).options
+            val listState = (state as MessagesState.ShowOptionsMenu).savedListState
 
             Box(modifier = Modifier.fillMaxSize()) {
-                MessagesList(modifier = Modifier.fillMaxSize(), messages = messages)
+                MessagesList(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.BottomCenter),
+                    messages = messages,
+                    listState = listState
+                )
 
                 Spacer(
                     modifier = Modifier
@@ -119,13 +136,16 @@ fun OptionsMenu(
 fun MessagesList(
     modifier: Modifier = Modifier,
     messages: List<Message>,
-    onItemClick: ((Message) -> Unit)? = null,
+    listState: LazyListState?,
+    onItemClick: ((Message, LazyListState) -> Unit)? = null,
     onItemLongClick: (() -> Unit)? = null,
     onItemDoubleClick: (() -> Unit)? = null
 ) {
-    LazyColumn(modifier = modifier) {
-        val messagesByDate = messages.groupBy { Date(it.date).toFormattedString("d MMM YYY") }
+    val messagesByDate = messages.groupBy { Date(it.date).toFormattedString("d MMM YYY") }
+    val lazyListState =
+        listState ?: rememberLazyListState(messages.size * messagesByDate.size)
 
+    LazyColumn(modifier = modifier, state = lazyListState) {
         @Suppress("NAME_SHADOWING")
         for ((date, messages) in messagesByDate) {
             item {
@@ -143,7 +163,7 @@ fun MessagesList(
             itemsIndexed(messages) { index, message ->
                 MessageItem(
                     message = message,
-                    onItemClick = onItemClick,
+                    onItemClick = { onItemClick?.invoke(it, lazyListState) },
                     onItemLongClick = onItemLongClick,
                     onItemDoubleClick = onItemDoubleClick
                 )

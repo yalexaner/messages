@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Telephony.Sms.CONTENT_URI
 import android.provider.Telephony.TextBasedSmsColumns.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +31,7 @@ class MessagesViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var messages: List<Message> = emptyList()
+    private var listState: LazyListState? = null
 
     private val _state = MutableLiveData<MessagesState>(MessagesState.Loading)
     val state: LiveData<MessagesState> = _state
@@ -40,9 +42,11 @@ class MessagesViewModel @Inject constructor(
             is MessagesEvent.ShowOptionsMenu -> _state.value = MessagesState.ShowOptionsMenu(
                 messages,
                 intent.message,
-                OptionsHandler.get
+                OptionsHandler.get,
+                intent.saveListState.also { listState = it }
             )
-            is MessagesEvent.CloseOptionsMenu -> _state.value = MessagesState.Loaded(messages)
+            is MessagesEvent.CloseOptionsMenu -> _state.value =
+                MessagesState.Loaded(messages, listState)
         }
     }
 
@@ -52,7 +56,7 @@ class MessagesViewModel @Inject constructor(
         _state.value = if (messages.isEmpty()) {
             MessagesState.LoadedNothing
         } else {
-            MessagesState.Loaded(messages = messages)
+            MessagesState.Loaded(messages = messages, savedListState = listState)
         }
     }
 
