@@ -7,8 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun LoadingComponent(modifier: Modifier = Modifier) {
+fun EmptyComponent(modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(text = "Loading")
+        Text(text = "Nothing loaded")
     }
 }
