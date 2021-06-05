@@ -39,15 +39,13 @@ private fun OptionsMenu(
 ) {
     Column(modifier = Modifier) {
         MessageComponent(
-            modifier = Modifier.padding(horizontal = 15.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             message = message,
             textColor = Color.Black,
             surfaceColor = Color.White,
             surfaceShape = RoundedCornerShape(15.dp),
             alignment = Alignment.Center
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Surface(
             modifier = Modifier
