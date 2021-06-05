@@ -29,6 +29,7 @@ import yalexaner.messages.other.PERMISSION_REQUEST_CODE
 import yalexaner.messages.other.permission.PermissionHandler
 import yalexaner.messages.other.permission.PermissionsRequest
 import yalexaner.messages.other.toFormattedString
+import yalexaner.messages.ui.components.LoadingComponent
 import yalexaner.messages.ui.theme.MessagesTextStyle
 import yalexaner.messages.ui.theme.indianRed
 
@@ -52,7 +53,7 @@ private fun Conversations(
     onItemClick: (String) -> Unit
 ) {
     when (val state = model.state.observeAsState().value) {
-        is Loading -> Text(text = "Loading")
+        is Loading -> LoadingComponent(modifier = Modifier.fillMaxSize(), message = "Loading")
         is ShowingNothing -> Text(text = "Nothing loaded")
         is ShowingConversations -> ConversationsList(state.conversations, onItemClick)
     }
