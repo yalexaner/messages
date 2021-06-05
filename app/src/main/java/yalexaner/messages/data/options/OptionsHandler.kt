@@ -1,13 +1,10 @@
-package yalexaner.messages.data
+package yalexaner.messages.data.options
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.TextFields
-import androidx.compose.ui.graphics.vector.ImageVector
-
-data class Option(val icon: ImageVector, val text: String)
 
 object OptionsHandler {
 

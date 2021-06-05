@@ -1,4 +1,4 @@
-package yalexaner.messages.models
+package yalexaner.messages.data.conversations
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,8 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
-import yalexaner.messages.data.conversations.Conversation
-import yalexaner.messages.data.conversations.ConversationsState
 import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString
 import yalexaner.messages.other.getCursor
@@ -32,9 +30,9 @@ class ConversationsViewModel @Inject constructor(
 
         val conversations = getConversations()
         if (conversations.isEmpty()) {
-            emit(ConversationsState.LoadedNothing)
+            emit(ConversationsState.ShowingNothing)
         } else {
-            emit(ConversationsState.Loaded(conversations = conversations))
+            emit(ConversationsState.ShowingConversations(conversations = conversations))
         }
     }
 

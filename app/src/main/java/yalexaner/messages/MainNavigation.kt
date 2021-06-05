@@ -6,12 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import yalexaner.messages.data.messages.MessagesEvent
-import yalexaner.messages.models.MessagesViewModel
+import yalexaner.messages.data.messages.MessagesViewModel
 import yalexaner.messages.ui.screens.ConversationsScreen
 import yalexaner.messages.ui.screens.MessagesScreen
 
 @Composable
-fun Navigation() {
+fun MainNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Route.Conversations.generic) {

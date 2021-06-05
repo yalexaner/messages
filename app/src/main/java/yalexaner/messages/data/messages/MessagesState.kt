@@ -1,20 +1,22 @@
 package yalexaner.messages.data.messages
 
 import androidx.compose.foundation.lazy.LazyListState
-import yalexaner.messages.data.Option
+import yalexaner.messages.data.options.Option
 
 sealed class MessagesState {
 
     object Loading : MessagesState()
 
-    object LoadedNothing : MessagesState()
+    object ShowingNothing : MessagesState()
 
-    class Loaded(val messages: List<Message>, val savedListState: LazyListState?) : MessagesState()
-
-    class ShowOptionsMenu(
+    data class ShowingMessages(
         val messages: List<Message>,
+        val savedListPosition: LazyListState?
+    ) : MessagesState()
+
+    data class ShowingOptionsMenu(
         val message: Message,
         val options: List<Option>,
-        val savedListState: LazyListState
+        val messagesState: ShowingMessages
     ) : MessagesState()
 }

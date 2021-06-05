@@ -2,9 +2,9 @@ package yalexaner.messages.data.conversations
 
 sealed class ConversationsState {
 
-    object Loading: ConversationsState()
+    object Loading : ConversationsState()
 
-    object LoadedNothing: ConversationsState()
+    object ShowingNothing : ConversationsState()
 
-    class Loaded(val conversations: List<Conversation>): ConversationsState()
+    data class ShowingConversations(val conversations: List<Conversation>) : ConversationsState()
 }

@@ -1,4 +1,4 @@
-package yalexaner.messages.permission
+package yalexaner.messages.other.permission
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

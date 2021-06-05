@@ -1,4 +1,4 @@
-package yalexaner.messages.models
+package yalexaner.messages.data.messages
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,11 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import yalexaner.messages.data.OptionsHandler
-import yalexaner.messages.data.messages.Message
-import yalexaner.messages.data.messages.MessageType
-import yalexaner.messages.data.messages.MessagesEvent
-import yalexaner.messages.data.messages.MessagesState
+import yalexaner.messages.data.options.OptionsHandler
 import yalexaner.messages.other.getAsInt
 import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString
@@ -31,7 +27,7 @@ class MessagesViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var messages: List<Message> = emptyList()
-    private var listState: LazyListState? = null
+    private var listPosition: LazyListState? = null
 
     private val _state = MutableLiveData<MessagesState>(MessagesState.Loading)
     val state: LiveData<MessagesState> = _state
@@ -39,14 +35,8 @@ class MessagesViewModel @Inject constructor(
     fun obtain(intent: MessagesEvent) {
         when (intent) {
             is MessagesEvent.LoadMessages -> viewModelScope.launch { loadMessages(intent.threadId) }
-            is MessagesEvent.ShowOptionsMenu -> _state.value = MessagesState.ShowOptionsMenu(
-                messages,
-                intent.message,
-                OptionsHandler.get,
-                intent.saveListState.also { listState = it }
-            )
-            is MessagesEvent.CloseOptionsMenu -> _state.value =
-                MessagesState.Loaded(messages, listState)
+            is MessagesEvent.ShowOptionsMenu -> showOptionsMenu(intent)
+            is MessagesEvent.CloseOptionsMenu -> closeOptionsMenu()
         }
     }
 
@@ -54,9 +44,9 @@ class MessagesViewModel @Inject constructor(
         messages = getMessages(threadId)
 
         _state.value = if (messages.isEmpty()) {
-            MessagesState.LoadedNothing
+            MessagesState.ShowingNothing
         } else {
-            MessagesState.Loaded(messages = messages, savedListState = listState)
+            MessagesState.ShowingMessages(messages = messages, savedListPosition = listPosition)
         }
     }
 
@@ -80,7 +70,7 @@ class MessagesViewModel @Inject constructor(
                 Message(
                     body,
                     date,
-                    if (type == MESSAGE_TYPE_INBOX) MessageType.INBOX else MessageType.OUTBOX
+                    if (type == MESSAGE_TYPE_INBOX) Message.Type.INBOX else Message.Type.OUTBOX
                 )
             )
         }
@@ -88,5 +78,21 @@ class MessagesViewModel @Inject constructor(
         cursor.close()
 
         conversations
+    }
+
+    private fun showOptionsMenu(intent: MessagesEvent.ShowOptionsMenu) {
+        listPosition = intent.savedListPosition
+        _state.value = MessagesState.ShowingOptionsMenu(
+            message = intent.message,
+            options = OptionsHandler.get,
+            messagesState = MessagesState.ShowingMessages(messages, listPosition)
+        )
+    }
+
+    private fun closeOptionsMenu() {
+        _state.value = MessagesState.ShowingMessages(
+            messages = messages,
+            savedListPosition = listPosition
+        )
     }
 }

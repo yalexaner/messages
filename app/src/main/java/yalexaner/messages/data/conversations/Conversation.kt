@@ -5,6 +5,6 @@ import java.util.*
 data class Conversation(
     val threadId: String,
     val address: String,
-    val body: String,
+    val snippet: String,
     val date: Date
 )
