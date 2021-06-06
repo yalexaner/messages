@@ -28,14 +28,15 @@ fun OptionsMenuComponent(
 
         ShadowOverlayComponent(onClick = { onClose(CloseOptionsMenu) })
 
-        OptionsMenu(message = state.message, options = state.options)
+        OptionsMenu(message = state.message, options = state.options, onClose = onClose)
     }
 }
 
 @Composable
 private fun OptionsMenu(
     message: Message,
-    options: List<Option>
+    options: List<Option>,
+    onClose: (CloseOptionsMenu) -> Unit
 ) {
     Column(modifier = Modifier) {
         MessageComponent(
@@ -54,7 +55,7 @@ private fun OptionsMenu(
             elevation = 15.dp,
             shape = RoundedCornerShape(10.dp)
         ) {
-            OptionsList(options = options)
+            OptionsList(options = options, onClose = onClose)
         }
     }
 }
@@ -62,11 +63,16 @@ private fun OptionsMenu(
 @Composable
 private fun OptionsList(
     modifier: Modifier = Modifier,
-    options: List<Option>
+    options: List<Option>,
+    onClose: (CloseOptionsMenu) -> Unit
 ) {
     Column(modifier = modifier.padding(vertical = 8.dp)) {
         options.forEach { option ->
-            OptionsItem(modifier = Modifier.fillMaxWidth(), option = option)
+            OptionsItem(modifier = Modifier.fillMaxWidth(), option = option) {
+                when (option.type) {
+                    Option.Type.CANCEL -> onClose(CloseOptionsMenu)
+                }
+            }
         }
     }
 }
@@ -74,11 +80,12 @@ private fun OptionsList(
 @Composable
 private fun OptionsItem(
     modifier: Modifier = Modifier,
-    option: Option
+    option: Option,
+    onItemClick: () -> Unit
 ) {
     Row(
         modifier = modifier
-            .clickable { }
+            .clickable { onItemClick() }
             .padding(horizontal = 32.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
