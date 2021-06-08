@@ -12,6 +12,4 @@ sealed class MessagesEvent {
     ) : MessagesEvent()
 
     object CloseOptionsMenu : MessagesEvent()
-//
-//    data class SaveListPosition(val listPosition: LazyListState) : MessagesEvent()
 }

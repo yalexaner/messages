@@ -32,6 +32,9 @@ class MessagesViewModel @Inject constructor(
     private val _state = MutableLiveData<MessagesState>(MessagesState.Loading)
     val state: LiveData<MessagesState> = _state
 
+    private val _optionsMenuState = MutableLiveData<OptionsMenuState>(OptionsMenuState.Hiding)
+    val optionsMenuState: LiveData<OptionsMenuState> = _optionsMenuState
+
     fun obtain(intent: MessagesEvent) {
         when (intent) {
             is MessagesEvent.LoadMessages -> viewModelScope.launch { loadMessages(intent.threadId) }
@@ -82,17 +85,14 @@ class MessagesViewModel @Inject constructor(
 
     private fun showOptionsMenu(intent: MessagesEvent.ShowOptionsMenu) {
         listPosition = intent.savedListPosition
-        _state.value = MessagesState.ShowingOptionsMenu(
+        _optionsMenuState.value = OptionsMenuState.Showing(
             message = intent.message,
             options = OptionsHandler.get,
-            messagesState = MessagesState.ShowingMessages(messages, listPosition)
+            onClose = { obtain(intent = MessagesEvent.CloseOptionsMenu) }
         )
     }
 
     private fun closeOptionsMenu() {
-        _state.value = MessagesState.ShowingMessages(
-            messages = messages,
-            savedListPosition = listPosition
-        )
+        _optionsMenuState.value = OptionsMenuState.Hiding
     }
 }

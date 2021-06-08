@@ -1,6 +1,9 @@
 package yalexaner.messages.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import yalexaner.messages.data.messages.Message
-import yalexaner.messages.data.messages.MessagesEvent
 import yalexaner.messages.data.messages.MessagesEvent.ShowOptionsMenu
 import yalexaner.messages.data.messages.MessagesState
 import yalexaner.messages.other.toFormattedString
@@ -25,13 +27,11 @@ fun MessagesListComponent(
     state: MessagesState.ShowingMessages,
     onItemClick: (ShowOptionsMenu) -> Unit = {}
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        MessagesList(
-            messages = state.messages,
-            listState = state.savedListPosition,
-            onItemClick = onItemClick
-        )
-    }
+    MessagesList(
+        messages = state.messages,
+        listState = state.savedListPosition,
+        onItemClick = onItemClick
+    )
 }
 
 @Composable

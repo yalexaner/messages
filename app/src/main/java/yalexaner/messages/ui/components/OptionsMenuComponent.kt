@@ -12,36 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yalexaner.messages.data.messages.Message
-import yalexaner.messages.data.messages.MessagesEvent.CloseOptionsMenu
-import yalexaner.messages.data.messages.MessagesState
+import yalexaner.messages.data.messages.OptionsMenuState
 import yalexaner.messages.data.options.Option
 
 @Composable
-fun OptionsMenuComponent(
-    modifier: Modifier = Modifier,
-    state: MessagesState.ShowingOptionsMenu,
-    onClose: (CloseOptionsMenu) -> Unit
-) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        MessagesListComponent(state = state.messagesState)
-
-        ShadowOverlayComponent(onClick = { onClose(CloseOptionsMenu) })
-
-        OptionsMenu(message = state.message, options = state.options, onClose = onClose)
-    }
-}
-
-@Composable
-private fun OptionsMenu(
-    message: Message,
-    options: List<Option>,
-    onClose: (CloseOptionsMenu) -> Unit
-) {
+fun OptionsMenuComponent(state: OptionsMenuState.Showing) {
     Column(modifier = Modifier) {
         MessageComponent(
             modifier = Modifier.padding(horizontal = 16.dp),
-            message = message,
+            message = state.message,
             textColor = Color.Black,
             surfaceColor = Color.White,
             surfaceShape = RoundedCornerShape(15.dp),
@@ -55,7 +34,7 @@ private fun OptionsMenu(
             elevation = 15.dp,
             shape = RoundedCornerShape(10.dp)
         ) {
-            OptionsList(options = options, onClose = onClose)
+            OptionsList(options = state.options, onClose = state.onClose)
         }
     }
 }
@@ -64,13 +43,13 @@ private fun OptionsMenu(
 private fun OptionsList(
     modifier: Modifier = Modifier,
     options: List<Option>,
-    onClose: (CloseOptionsMenu) -> Unit
+    onClose: () -> Unit
 ) {
     Column(modifier = modifier.padding(vertical = 8.dp)) {
         options.forEach { option ->
             OptionsItem(modifier = Modifier.fillMaxWidth(), option = option) {
                 when (option.type) {
-                    Option.Type.CANCEL -> onClose(CloseOptionsMenu)
+                    Option.Type.CANCEL -> onClose()
                 }
             }
         }
