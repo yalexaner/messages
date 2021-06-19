@@ -1,7 +1,6 @@
 package yalexaner.messages.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -45,11 +44,19 @@ private fun ShowingMessagesStateHandler(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         MessagesListComponent(state = state, onItemClick = model::obtain)
 
-        if (optionsMenuState.showing) {
+        AnimatedVisibility(
+            visible = optionsMenuState.showing,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             ShadowOverlayComponent { model.obtain(intent = MessagesEvent.CloseOptionsMenu) }
         }
 
-        AnimatedVisibility(visible = optionsMenuState.showing) {
+        AnimatedVisibility(
+            visible = optionsMenuState.showing,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it })
+        ) {
             OptionsMenuComponent(
                 message = optionsMenuState.message!!,
                 options = optionsMenuState.options!!,
