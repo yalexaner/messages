@@ -78,7 +78,7 @@ private fun OptionsItem(
             modifier = Modifier.size(24.dp),
             imageVector = option.icon, contentDescription = "Option icon"
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Text(text = option.text, fontSize = 20.sp)
     }
 }
