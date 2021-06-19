@@ -6,5 +6,7 @@ sealed class ConversationsState {
 
     object ShowingNothing : ConversationsState()
 
-    data class ShowingConversations(val conversations: List<Conversation>) : ConversationsState()
+    data class ShowingConversations(
+        val conversations: List<Conversation>
+    ) : ConversationsState()
 }

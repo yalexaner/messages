@@ -13,6 +13,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import yalexaner.messages.data.options.OptionsHandler
+import yalexaner.messages.data.options.OptionsMenuState
 import yalexaner.messages.other.getAsInt
 import yalexaner.messages.other.getAsLong
 import yalexaner.messages.other.getAsString

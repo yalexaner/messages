@@ -23,9 +23,9 @@ fun MessageComponent(
     surfaceColor: Color,
     surfaceShape: RoundedCornerShape,
     alignment: Alignment,
-    onItemClick: () -> Unit = {},
-    onItemLongClick: (() -> Unit)? = {},
-    onItemDoubleClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = {},
+    onDoubleClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -34,9 +34,9 @@ fun MessageComponent(
             modifier = Modifier
                 .align(alignment = alignment)
                 .noRippleCombinedClickable(
-                    onClick = onItemClick,
-                    onLongClick = onItemLongClick,
-                    onDoubleClick = onItemDoubleClick
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                    onDoubleClick = onDoubleClick
                 )
                 .background(color = surfaceColor, shape = surfaceShape)
                 .padding(horizontal = 16.dp, vertical = 8.dp),

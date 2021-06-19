@@ -1,6 +1,6 @@
-package yalexaner.messages.data.messages
+package yalexaner.messages.data.options
 
-import yalexaner.messages.data.options.Option
+import yalexaner.messages.data.messages.Message
 
 data class OptionsMenuState(
     val showing: Boolean = false,

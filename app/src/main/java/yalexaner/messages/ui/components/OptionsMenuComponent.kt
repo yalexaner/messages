@@ -12,15 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yalexaner.messages.data.messages.OptionsMenuState
+import yalexaner.messages.data.messages.Message
 import yalexaner.messages.data.options.Option
 
 @Composable
-fun OptionsMenuComponent(state: OptionsMenuState.Showing) {
+fun OptionsMenuComponent(
+    message: Message,
+    options: List<Option>,
+    onClose: () -> Unit
+) {
     Column(modifier = Modifier) {
         MessageComponent(
             modifier = Modifier.padding(horizontal = 16.dp),
-            message = state.message,
+            message = message,
             textColor = Color.Black,
             surfaceColor = Color.White,
             surfaceShape = RoundedCornerShape(15.dp),
@@ -34,7 +38,7 @@ fun OptionsMenuComponent(state: OptionsMenuState.Showing) {
             elevation = 15.dp,
             shape = RoundedCornerShape(10.dp)
         ) {
-            OptionsList(options = state.options, onClose = state.onClose)
+            OptionsList(options = options, onClose = onClose)
         }
     }
 }

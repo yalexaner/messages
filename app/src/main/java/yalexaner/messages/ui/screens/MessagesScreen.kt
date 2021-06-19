@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import yalexaner.messages.data.messages.MessagesEvent
 import yalexaner.messages.data.messages.MessagesState
 import yalexaner.messages.data.messages.MessagesViewModel
-import yalexaner.messages.data.messages.OptionsMenuState
+import yalexaner.messages.data.options.OptionsMenuState
 import yalexaner.messages.ui.components.*
 
 @Composable

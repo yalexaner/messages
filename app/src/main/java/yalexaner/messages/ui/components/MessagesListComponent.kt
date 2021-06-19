@@ -63,9 +63,9 @@ private fun MessagesList(
             itemsIndexed(messages) { index, message ->
                 MessagesItem(
                     message = message,
-                    onItemClick = { onItemClick(ShowOptionsMenu(message, lazyListState)) },
-                    onItemLongClick = onItemLongClick,
-                    onItemDoubleClick = onItemDoubleClick
+                    onClick = { onItemClick(ShowOptionsMenu(message, lazyListState)) },
+                    onLongClick = onItemLongClick,
+                    onDoubleClick = onItemDoubleClick
                 )
 
                 if (message.type == messages.getOrNull(index + 1)?.type) {
@@ -81,9 +81,9 @@ private fun MessagesList(
 @Composable
 private fun MessagesItem(
     message: Message,
-    onItemClick: () -> Unit = {},
-    onItemLongClick: () -> Unit = {},
-    onItemDoubleClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+    onDoubleClick: () -> Unit = {}
 ) {
     if (message.body.isBlank()) return
 
@@ -107,8 +107,8 @@ private fun MessagesItem(
         surfaceColor = if (isInbox) colors.secondary else colors.primary,
         surfaceShape = messageShape,
         alignment = if (isInbox) Alignment.BottomStart else Alignment.BottomEnd,
-        onItemClick = onItemClick,
-        onItemLongClick = onItemLongClick,
-        onItemDoubleClick = onItemDoubleClick
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick
     )
 }
