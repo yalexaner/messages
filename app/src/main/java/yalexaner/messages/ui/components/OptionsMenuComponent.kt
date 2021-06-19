@@ -3,6 +3,7 @@ package yalexaner.messages.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -22,14 +23,16 @@ fun OptionsMenuComponent(
     closeOnAction: () -> Unit = {}
 ) {
     Column(modifier = Modifier) {
-        MessageComponent(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            message = message,
-            textColor = Color.Black,
-            surfaceColor = Color.White,
-            surfaceShape = RoundedCornerShape(15.dp),
-            alignment = Alignment.Center
-        )
+        SelectionContainer {
+            MessageComponent(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                message = message,
+                textColor = Color.Black,
+                surfaceColor = Color.White,
+                surfaceShape = RoundedCornerShape(15.dp),
+                alignment = Alignment.Center
+            )
+        }
 
         Surface(
             modifier = Modifier

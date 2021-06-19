@@ -40,7 +40,6 @@ private fun MessagesList(
     listState: LazyListState?,
     onItemClick: (ShowOptionsMenu) -> Unit = {},
     onItemLongClick: () -> Unit = {},
-    onItemDoubleClick: () -> Unit = {}
 ) {
     val messagesByDate = messages.groupBy { Date(it.date).toFormattedString("d MMM YYY") }
 
@@ -64,8 +63,7 @@ private fun MessagesList(
                 MessagesItem(
                     message = message,
                     onClick = { onItemClick(ShowOptionsMenu(message, lazyListState)) },
-                    onLongClick = onItemLongClick,
-                    onDoubleClick = onItemDoubleClick
+                    onLongClick = onItemLongClick
                 )
 
                 if (message.type == messages.getOrNull(index + 1)?.type) {
@@ -81,9 +79,8 @@ private fun MessagesList(
 @Composable
 private fun MessagesItem(
     message: Message,
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
-    onDoubleClick: () -> Unit = {}
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     if (message.body.isBlank()) return
 
@@ -107,8 +104,7 @@ private fun MessagesItem(
         surfaceColor = if (isInbox) colors.secondary else colors.primary,
         surfaceShape = messageShape,
         alignment = if (isInbox) Alignment.BottomStart else Alignment.BottomEnd,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick
+        onClick = { onClick() },
+        onLongClick = { onLongClick() }
     )
 }

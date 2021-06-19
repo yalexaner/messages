@@ -29,21 +29,6 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-fun Modifier.noRippleCombinedClickable(
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-    onDoubleClick: (() -> Unit)? = null
-): Modifier = composed {
-    combinedClickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick
-    )
-}
-
 fun Date.toFormattedString(pattern: String): String =
     SimpleDateFormat(pattern, Locale.getDefault()).format(this)
 
