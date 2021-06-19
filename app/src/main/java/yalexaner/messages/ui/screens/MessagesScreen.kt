@@ -52,7 +52,8 @@ private fun ShowingMessagesStateHandler(
         AnimatedVisibility(visible = optionsMenuState.showing) {
             OptionsMenuComponent(
                 message = optionsMenuState.message!!,
-                options = optionsMenuState.options!!
+                options = optionsMenuState.options!!,
+                closeOnAction = { model.obtain(intent = MessagesEvent.CloseOptionsMenu) }
             )
         }
     }
