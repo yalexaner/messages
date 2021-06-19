@@ -18,18 +18,17 @@ import yalexaner.messages.ui.components.FloatingNotificationComponent
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(model: MainViewModel = viewModel()) {
-    val shouldShowFloatingNotification by model.shouldShowFloatingNotification.observeAsState(false)
-    val floatingNotificationText = model.floatingNotificationText
-
     Box(modifier = Modifier.fillMaxSize()) {
         MainNavigation()
 
+        val visibilityState = model.floatingNotificationState.visibilityState
         AnimatedVisibility(
-            visible = shouldShowFloatingNotification,
+            visibleState = visibilityState,
             enter = slideInVertically(initialOffsetY = { -it }),
             exit = slideOutVertically(targetOffsetY = { -it })
         ) {
-            FloatingNotificationComponent(text = floatingNotificationText ?: "")
+            val notificationText by model.floatingNotificationState.text.observeAsState()
+            FloatingNotificationComponent(text = notificationText ?: "")
         }
     }
 }

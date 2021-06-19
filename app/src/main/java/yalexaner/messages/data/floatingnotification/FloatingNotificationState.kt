@@ -1,34 +1,40 @@
 package yalexaner.messages.data.floatingnotification
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FloatingNotificationState @Inject constructor() {
 
-    private val floatingNotificationScope = Dispatchers.Main
+    val visibilityState = MutableTransitionState(false)
 
-    private val _showing = MutableLiveData(false)
-    val showing: LiveData<Boolean> = _showing
+    private var _text = MutableLiveData<String>(null)
+    val text: LiveData<String> = _text
 
-    var text: String? = null
-        private set
+    private var job: Job? = null
 
     fun showNotification(text: String, timeShowing: Long = SHORT_SHOWING_TIME) {
-        GlobalScope.launch(floatingNotificationScope) {
-            _showing.value = true
-            this@FloatingNotificationState.text = text
+        hideNotification()
+
+        job = CoroutineScope(Dispatchers.Main).launch {
+            while (!visibilityState.isIdle) delay(5L)
+
+            visibilityState.targetState = true
+            _text.value = text
 
             delay(timeShowing)
 
-            _showing.value = false
+            visibilityState.targetState = false
         }
+    }
+
+    private fun hideNotification() {
+        visibilityState.targetState = false
+        job?.cancel()
     }
 
     companion object {

@@ -41,7 +41,7 @@ fun OptionsMenuComponent(
             elevation = 15.dp,
             shape = RoundedCornerShape(10.dp)
         ) {
-            OptionsList( options = options, onItemClick = closeOnAction )
+            OptionsList(options = options, onItemClick = closeOnAction)
         }
     }
 }
