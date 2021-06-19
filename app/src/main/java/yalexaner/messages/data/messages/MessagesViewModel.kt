@@ -14,10 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import yalexaner.messages.data.options.OptionsHandler
 import yalexaner.messages.data.options.OptionsMenuState
-import yalexaner.messages.other.getAsInt
-import yalexaner.messages.other.getAsLong
-import yalexaner.messages.other.getAsString
-import yalexaner.messages.other.getCursor
+import yalexaner.messages.other.*
 import java.util.*
 import javax.inject.Inject
 
@@ -88,6 +85,7 @@ class MessagesViewModel @Inject constructor(
         listPosition = intent.savedListPosition
 
         val options = OptionsHandler(
+            copyAction = { context.copyToClipboard(intent.message.body) },
             cancelAction = { obtain(intent = MessagesEvent.CloseOptionsMenu) }
         ).get
 

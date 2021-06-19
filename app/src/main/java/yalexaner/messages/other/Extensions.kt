@@ -1,5 +1,7 @@
 package yalexaner.messages.other
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
@@ -10,6 +12,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,3 +60,9 @@ fun Context.getCursor(
     selectionArguments,
     sortOrder
 )
+
+fun Context.copyToClipboard(text: String) {
+    val clipboardManager = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
+    val clip = ClipData.newPlainText("clipboard", text)
+    clipboardManager.setPrimaryClip(clip)
+}
