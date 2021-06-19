@@ -18,8 +18,7 @@ import yalexaner.messages.data.options.Option
 @Composable
 fun OptionsMenuComponent(
     message: Message,
-    options: List<Option>,
-    onClose: () -> Unit
+    options: List<Option>
 ) {
     Column(modifier = Modifier) {
         MessageComponent(
@@ -38,7 +37,7 @@ fun OptionsMenuComponent(
             elevation = 15.dp,
             shape = RoundedCornerShape(10.dp)
         ) {
-            OptionsList(options = options, onClose = onClose)
+            OptionsList(options = options)
         }
     }
 }
@@ -46,16 +45,11 @@ fun OptionsMenuComponent(
 @Composable
 private fun OptionsList(
     modifier: Modifier = Modifier,
-    options: List<Option>,
-    onClose: () -> Unit
+    options: List<Option>
 ) {
     Column(modifier = modifier.padding(vertical = 8.dp)) {
         options.forEach { option ->
-            OptionsItem(modifier = Modifier.fillMaxWidth(), option = option) {
-                when (option.type) {
-                    Option.Type.CANCEL -> onClose()
-                }
-            }
+            OptionsItem(modifier = Modifier.fillMaxWidth(), option = option)
         }
     }
 }
@@ -63,12 +57,11 @@ private fun OptionsList(
 @Composable
 private fun OptionsItem(
     modifier: Modifier = Modifier,
-    option: Option,
-    onItemClick: () -> Unit
+    option: Option
 ) {
     Row(
         modifier = modifier
-            .clickable { onItemClick() }
+            .clickable { option.action() }
             .padding(horizontal = 32.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -53,7 +53,7 @@ private fun ShowingMessagesStateHandler(
             OptionsMenuComponent(
                 message = optionsMenuState.message!!,
                 options = optionsMenuState.options!!
-            ) { model.obtain(intent = MessagesEvent.CloseOptionsMenu) }
+            )
         }
     }
 }

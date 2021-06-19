@@ -86,10 +86,15 @@ class MessagesViewModel @Inject constructor(
 
     private fun showOptionsMenu(intent: MessagesEvent.ShowOptionsMenu) {
         listPosition = intent.savedListPosition
+
+        val options = OptionsHandler(
+            cancelAction = { obtain(intent = MessagesEvent.CloseOptionsMenu) }
+        ).get
+
         _optionsMenuState.value = OptionsMenuState(
             showing = true,
             message = intent.message,
-            options = OptionsHandler.get,
+            options = options
         )
     }
 
