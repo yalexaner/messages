@@ -8,18 +8,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import yalexaner.messages.data.messages.Message
 import yalexaner.messages.data.messages.MessagesEvent.ShowOptionsMenu
 import yalexaner.messages.data.messages.MessagesState
 import yalexaner.messages.other.toFormattedString
+import yalexaner.messages.ui.theme.MessagesCornersShape
 import java.util.*
 
 @Composable
@@ -84,26 +86,46 @@ private fun MessagesItem(
 ) {
     if (message.body.isBlank()) return
 
-    val isInbox = message.type == Message.Type.INBOX
+    val paddingStart = when (message.type) {
+        Message.Type.READONLY -> 8.dp
+        Message.Type.INBOX -> 24.dp
+        Message.Type.OUTBOX -> 64.dp
+    }
 
-    val paddingStart = if (isInbox) 24.dp else 64.dp
-    val paddingEnd = if (isInbox) 64.dp else 24.dp
-    val colors = MaterialTheme.colors
-
-    val messageShape = RoundedCornerShape(
-        topStart = 15.dp,
-        topEnd = 15.dp,
-        bottomStart = if (isInbox) 0.dp else 15.dp,
-        bottomEnd = if (isInbox) 15.dp else 0.dp,
-    )
+    val paddingEnd = when (message.type) {
+        Message.Type.READONLY -> 8.dp
+        Message.Type.INBOX -> 64.dp
+        Message.Type.OUTBOX -> 24.dp
+    }
 
     MessageComponent(
         modifier = Modifier.padding(start = paddingStart, end = paddingEnd),
+
         message = message,
-        textColor = if (isInbox) colors.onSecondary else colors.onPrimary,
-        surfaceColor = if (isInbox) colors.secondary else colors.primary,
-        surfaceShape = messageShape,
-        alignment = if (isInbox) Alignment.BottomStart else Alignment.BottomEnd,
+
+        textColor = when (message.type) {
+            Message.Type.READONLY -> Color.Black
+            Message.Type.INBOX -> MaterialTheme.colors.onSecondary
+            Message.Type.OUTBOX -> MaterialTheme.colors.onPrimary
+        },
+
+        surfaceColor = when (message.type) {
+            Message.Type.READONLY -> Color.White
+            Message.Type.INBOX -> MaterialTheme.colors.secondary
+            Message.Type.OUTBOX -> MaterialTheme.colors.primary
+        },
+
+        surfaceShape = when (message.type) {
+            Message.Type.READONLY -> RectangleShape
+            Message.Type.INBOX -> MessagesCornersShape.INBOX
+            Message.Type.OUTBOX -> MessagesCornersShape.OUTBOX
+        },
+
+        alignment = when (message.type) {
+            Message.Type.READONLY, Message.Type.INBOX -> Alignment.BottomStart
+            Message.Type.OUTBOX -> Alignment.BottomEnd
+        },
+
         onClick = { onClick() },
         onLongClick = { onLongClick() }
     )

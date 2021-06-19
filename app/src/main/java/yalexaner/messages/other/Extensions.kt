@@ -20,6 +20,9 @@ fun Cursor.getAsLong(name: String): Long = getLong(getColumnIndex(name))
 fun Cursor.getAsString(name: String): String = getString(getColumnIndex(name))
 fun Cursor.getAsInt(name: String): Int = getInt(getColumnIndex(name))
 
+val String.notPhoneNumber: Boolean
+    get() = !all { it.isDigit() || it == '+' }
+
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier = composed {
     clickable(
         interactionSource = remember { MutableInteractionSource() },

@@ -56,7 +56,7 @@ class MessagesViewModel @Inject constructor(
     private suspend fun getMessages(threadId: String) = withContext(Dispatchers.IO) {
         val cursor = context.getCursor(
             contentUri = CONTENT_URI,
-            projection = arrayOf(THREAD_ID, BODY, DATE, TYPE),
+            projection = arrayOf(THREAD_ID, ADDRESS, BODY, DATE, TYPE),
             selection = "$THREAD_ID = ?",
             selectionArguments = arrayOf(threadId),
             sortOrder = "date ASC"
@@ -65,17 +65,16 @@ class MessagesViewModel @Inject constructor(
         val conversations: MutableList<Message> = mutableListOf()
 
         while (cursor.moveToNext() && isActive) {
+            val address = cursor.getAsString(ADDRESS)
             val body = cursor.getAsString(BODY)
             val date = cursor.getAsLong(DATE)
-            val type = cursor.getAsInt(TYPE)
+            val type = when {
+                address.notPhoneNumber -> Message.Type.READONLY
+                cursor.getAsInt(TYPE) == MESSAGE_TYPE_INBOX -> Message.Type.INBOX
+                else -> Message.Type.OUTBOX
+            }
 
-            conversations.add(
-                Message(
-                    body,
-                    date,
-                    if (type == MESSAGE_TYPE_INBOX) Message.Type.INBOX else Message.Type.OUTBOX
-                )
-            )
+            conversations.add(Message(address, body, date, type))
         }
 
         cursor.close()
