@@ -7,6 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import dagger.hilt.android.AndroidEntryPoint
 import yalexaner.messages.other.permission.PermissionHandler
+import yalexaner.messages.ui.screens.MainScreen
 import yalexaner.messages.ui.theme.MessagesTheme
 
 @AndroidEntryPoint
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MessagesTheme {
                 CompositionLocalProvider(LocalAppCompatActivity provides this) {
-                    MainNavigation()
+                    MainScreen()
                 }
             }
         }

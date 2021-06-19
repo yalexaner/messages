@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import yalexaner.messages.data.floatingnotification.FloatingNotificationState
 import yalexaner.messages.data.options.OptionsHandler
 import yalexaner.messages.data.options.OptionsMenuState
 import yalexaner.messages.other.*
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 @SuppressLint("StaticFieldLeak")
 class MessagesViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val floatingNotificationState: FloatingNotificationState
 ) : ViewModel() {
 
     private var messages: List<Message> = emptyList()
@@ -85,7 +87,10 @@ class MessagesViewModel @Inject constructor(
         listPosition = intent.savedListPosition
 
         val options = OptionsHandler(
-            copyAction = { context.copyToClipboard(intent.message.body) },
+            copyAction = {
+                context.copyToClipboard(intent.message.body)
+                floatingNotificationState.showNotification("Message text copied")
+            },
             cancelAction = { obtain(intent = MessagesEvent.CloseOptionsMenu) }
         ).get
 
