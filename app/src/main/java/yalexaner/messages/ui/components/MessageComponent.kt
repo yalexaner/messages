@@ -3,7 +3,6 @@ package yalexaner.messages.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import yalexaner.messages.data.messages.Message
+import yalexaner.messages.other.noRippleCombinedClickable
 import yalexaner.messages.other.toFormattedString
 import java.util.*
 
@@ -23,12 +23,16 @@ fun MessageComponent(
     surfaceColor: Color,
     surfaceShape: RoundedCornerShape,
     alignment: Alignment,
-    onClick: (offset: Int) -> Unit = {},
-    onLongClick: ((offset: Int) -> Unit)? = null,
-    onDoubleClick: ((offset: Int) -> Unit)? = null
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {}
 ) {
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .noRippleCombinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
         Column(
             modifier = Modifier
@@ -37,13 +41,10 @@ fun MessageComponent(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.End
         ) {
-            ClickableTextComponent(
+            Text(
                 text = message.body,
                 style = MaterialTheme.typography.subtitle1,
-                color = textColor,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                onDoubleClick = onDoubleClick
+                color = textColor
             )
 
             Spacer(modifier = Modifier.height(1.dp))
